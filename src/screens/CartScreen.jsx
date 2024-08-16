@@ -7,7 +7,7 @@ import {
   Alert,
   TextInput,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import CheckBox from '@react-native-community/checkbox';
 import {
@@ -23,7 +23,6 @@ import {useNavigation} from '@react-navigation/native';
 
 const CartScreen = () => {
   const cart = useSelector(state => state.cart.cart);
-  const totalAmount = useSelector(selectCartTotal);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [coupon, setCoupon] = useState('');
@@ -31,6 +30,16 @@ const CartScreen = () => {
   const [couponMessage, setCouponMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [selectedItems, setSelectedItems] = useState({});
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  useEffect(() => {
+    const selectedCartItems = cart.filter(item => selectedItems[item.id]);
+    const newTotalAmount = selectedCartItems.reduce(
+      (total, item) => total + item.price.amount * item.quantity,
+      0,
+    );
+    setTotalAmount(newTotalAmount - discount);
+  }, [selectedItems, discount, cart]);
 
   const handleRemoveProduct = item => {
     dispatch(removeFromCart(item));
@@ -52,13 +61,8 @@ const CartScreen = () => {
     }
     navigation.navigate('CheckOut', {
       cart: selectedCartItems,
-      totalAmount:
-        selectedCartItems.reduce(
-          (total, item) => total + item.price.amount * item.quantity,
-          0,
-        ) - discount,
+      totalAmount: totalAmount,
     });
-    dispatch(cleanCart());
   };
 
   const handleApplyCoupon = () => {
@@ -181,7 +185,7 @@ const CartScreen = () => {
                 </Text>
               )}
               <Text className="text-lg font-bold text-gray-800">
-                Total: GBP {totalAmount - discount}
+                Total: GBP {totalAmount}
               </Text>
               <Pressable
                 className="bg-blue-500 p-4 rounded-lg mt-4"

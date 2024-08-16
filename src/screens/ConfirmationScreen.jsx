@@ -2,6 +2,7 @@ import {Text, View, Pressable, Alert, Image} from 'react-native';
 import React from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
+import {cleanCart} from '../redux/CartReducer';
 
 const ConfirmationScreen = () => {
   const dispatch = useDispatch();
@@ -10,6 +11,7 @@ const ConfirmationScreen = () => {
     useSelector(state => state.order.orders[state.order.orders.length - 1]);
 
   const handlePlaceOrder = () => {
+    dispatch(cleanCart());
     Alert.alert('Order Placed', 'Your order has been placed successfully!', [
       {
         text: 'OK',
