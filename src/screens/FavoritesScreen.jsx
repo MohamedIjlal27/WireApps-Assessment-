@@ -1,5 +1,5 @@
 import {Text, View, FlatList, Image, Pressable, Alert} from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {removeFavorite} from '../redux/FavouriteReducer';
 import {
@@ -17,7 +17,6 @@ const FavoritesScreen = () => {
   const favorites = useSelector(state => state.favorites.items);
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [selectedItems, setSelectedItems] = useState({});
 
   const handleRemoveFavorite = id => {
     dispatch(removeFavorite(id));
@@ -32,58 +31,25 @@ const FavoritesScreen = () => {
     });
   };
 
-  const handleSelectItem = id => {
-    setSelectedItems(prevState => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }));
-  };
-
-  const handleAddToCart = () => {
-    let itemsAdded = false;
-    Object.keys(selectedItems).forEach(id => {
-      if (selectedItems[id]) {
-        const item = favorites.find(fav => fav.id === id);
-        if (item) {
-          dispatch(addToCart({...item, quantity: 1}));
-          dispatch(removeFavorite(id));
-          itemsAdded = true;
-        }
-      }
-    });
-
-    if (itemsAdded) {
-      Alert.alert(
-        'Success',
-        'Products added to cart successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Cart'),
-          },
-        ],
-        {cancelable: false},
-      );
-    } else {
-      Alert.alert(
-        'No Items Selected',
-        'Please select items to add to cart.',
-        [{text: 'OK'}],
-        {cancelable: false},
-      );
-    }
+  const handleAddToCart = item => {
+    dispatch(addToCart({...item, quantity: 1}));
+    dispatch(removeFavorite(item.id));
+    Alert.alert(
+      'Success',
+      'Product added to cart successfully!',
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Cart'),
+        },
+      ],
+      {cancelable: false},
+    );
   };
 
   const renderFavoriteItem = ({item}) => (
     <View className="bg-white rounded-lg shadow-md mb-4 p-4">
       <View className="flex-row items-center">
-        <Pressable onPress={() => handleSelectItem(item.id)} className="mr-2">
-          <Icon
-            name={selectedItems[item.id] ? 'checkbox' : 'square-outline'}
-            size={24}
-            color="blue"
-          />
-        </Pressable>
         <Pressable
           onPress={() => handleProductPress(item)}
           className="flex-1 flex-row items-center">
@@ -109,6 +75,9 @@ const FavoritesScreen = () => {
               {item.stockStatus}
             </Text>
           </View>
+        </Pressable>
+        <Pressable onPress={() => handleAddToCart(item)} className="ml-2">
+          <Icon name="cart" size={24} color="blue" />
         </Pressable>
         <Pressable
           onPress={() => handleRemoveFavorite(item.id)}
