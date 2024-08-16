@@ -98,50 +98,36 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Product"
           component={ProductInfoScreen}
-          options={{headerBackTitleVisible: false}}
+          options={({navigation}) => ({
+            headerBackTitleVisible: false,
+          })}
         />
         <Stack.Screen
           name="Address"
           component={AddAddressScreen}
-          options={{headerBackTitleVisible: false}}
+          options={({navigation}) => ({
+            headerBackTitleVisible: false,
+          })}
         />
         <Stack.Screen
           name="Confirmation"
           component={ConfirmationScreen}
-          options={{headerBackTitleVisible: false}}
+          options={({navigation}) => ({
+            headerBackTitleVisible: false,
+          })}
         />
         <Stack.Screen
           name="Order"
           component={OrderScreen}
-          options={{headerBackTitleVisible: false}}
+          options={({navigation}) => ({
+            headerBackTitleVisible: false,
+          })}
         />
         <Stack.Screen
           name="CheckOut"
           component={CheckOutrScreen}
           options={({navigation}) => ({
             headerBackTitleVisible: false,
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => {
-                  Alert.alert(
-                    'Are you sure you want to leave?',
-                    'Added items will be lost',
-                    [
-                      {
-                        text: 'Yes',
-                        onPress: () => navigation.navigate('Home'),
-                      },
-                      {
-                        text: 'No',
-                        style: 'cancel',
-                      },
-                    ],
-                    {cancelable: false},
-                  );
-                }}>
-                <Ionicons name="arrow-back" size={24} color="black" />
-              </TouchableOpacity>
-            ),
           })}
         />
         <Stack.Screen
